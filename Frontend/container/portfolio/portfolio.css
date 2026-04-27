@@ -206,22 +206,22 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    background: linear-gradient(135deg, #b057d5 0%, #ff8453 100%);
+    background-color: #b057d5;
     color: #fff;
-    padding: 16px 40px;
+    padding: 18px 45px;
     border-radius: 50px;
     text-decoration: none;
     font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 1px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 20px rgba(176, 87, 213, 0.3);
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 15px rgba(176, 87, 213, 0.2);
 }
 
 .portfolio-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(176, 87, 213, 0.4);
-    background: linear-gradient(135deg, #ff8453 0%, #b057d5 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(176, 87, 213, 0.4);
+    background-color: #c16ce6;
 }
 
 .portfolio-btn i {
