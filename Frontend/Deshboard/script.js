@@ -101,7 +101,7 @@ function renderBlogTable(blogs) {
             const imageCell = imageUrl
                 ? `<img src="${imageUrl}" alt="${safeTitle}" style="width:56px;height:40px;object-fit:cover;border-radius:8px;border:1px solid #222;" onerror="this.closest('td').innerText='No image';">`
                 : "No image";
-            const blogUrl = `Blog Static Page/index.html?id=${safeId}`;
+            const blogUrl = `Blog Static Page/Blog.html?id=${safeId}`;
             return `
             <tr>
                 <td>${imageCell}</td>

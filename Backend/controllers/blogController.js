@@ -7,6 +7,17 @@ exports.getBlogs = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+exports.getBlogById = async (req, res) => {
+    try {
+        const blog = await Blog.findById(req.params.id);
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+        res.json(blog);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 exports.createBlog = async (req, res) => {
     const blog = new Blog(req.body);
     try {
