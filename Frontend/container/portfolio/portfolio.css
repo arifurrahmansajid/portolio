@@ -177,3 +177,40 @@
     color: #ff8453;
     padding-left: 5px;
 }
+
+/* View All Button */
+.portfolio-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 60px;
+}
+
+.portfolio-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, #b057d5 0%, #ff8453 100%);
+    color: #fff;
+    padding: 16px 40px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 20px rgba(176, 87, 213, 0.3);
+}
+
+.portfolio-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(176, 87, 213, 0.4);
+    background: linear-gradient(135deg, #ff8453 0%, #b057d5 100%);
+}
+
+.portfolio-btn i {
+    transition: transform 0.3s ease;
+}
+
+.portfolio-btn:hover i {
+    transform: translateX(5px);
+}
