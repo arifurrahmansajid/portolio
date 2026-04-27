@@ -5,6 +5,7 @@ const blogSchema = new mongoose.Schema({
     author: { type: String, default: 'Admin' },
     image: { type: String },
     tags: [String],
+    published: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
 });
 module.exports = mongoose.model('Blog', blogSchema);

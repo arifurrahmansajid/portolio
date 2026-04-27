@@ -1,8 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { getBlogs, getBlogById, createBlog, deleteBlog } = require('../controllers/blogController');
-router.get('/', getBlogs);
-router.get('/:id', getBlogById);
-router.post('/', createBlog);
-router.delete('/:id', deleteBlog);
+const { getBlogs, getAllBlogs, getBlogById, createBlog, updateBlog, deleteBlog } = require('../controllers/blogController');
+
+// Public routes
+router.get('/', getBlogs); // Get published blogs only
+router.get('/:id', getBlogById); // Get single blog
+
+// Admin routes
+router.post('/', createBlog); // Create new blog
+router.put('/:id', updateBlog); // Update blog
+router.delete('/:id', deleteBlog); // Delete blog
+router.get('/admin/all', getAllBlogs); // Get all blogs (admin only)
+
 module.exports = router;
