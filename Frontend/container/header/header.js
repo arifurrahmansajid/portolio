@@ -51,6 +51,29 @@ function initHeader() {
             });
         });
     }
+
+    // --- Active Link Highlighting ---
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.nav-item');
+    const mobileItems = document.querySelectorAll('.mobile-nav-item');
+
+    function setActiveLink(items) {
+        items.forEach(item => {
+            const href = item.getAttribute('href');
+            // Remove active class first
+            item.classList.remove('active');
+            
+            // Check if href matches current path
+            if (currentPath.includes(href) && href !== 'Index.html' && href !== '/') {
+                item.classList.add('active');
+            } else if ((currentPath === '/' || currentPath.includes('Index.html')) && (href === 'Index.html#home' || href === '#home')) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    setActiveLink(navItems);
+    setActiveLink(mobileItems);
 }
 
 // Run init on DOMContentLoaded or immediately if already loaded

@@ -3,7 +3,8 @@ const DEFAULT_BLOG_IMAGE = "https://via.placeholder.com/400x200?text=Blog+Image"
 const DEFAULT_PROJECT_IMAGE = "https://via.placeholder.com/400x200?text=Project+Image";
 
 const state = {
-    currentPage: "home"
+    currentPage: "home",
+    currentReplyCommentId: null
 };
 
 const dom = {
@@ -29,7 +30,15 @@ const dom = {
     previewBlogTags: document.getElementById("preview-blog-tags"),
     previewProjectName: document.getElementById("preview-project-name"),
     previewProjectDesc: document.getElementById("preview-project-desc"),
-    previewProjectTech: document.getElementById("preview-project-tech")
+    previewProjectTech: document.getElementById("preview-project-tech"),
+    commentCount: document.getElementById("comment-count"),
+    commentsList: document.getElementById("comments-list"),
+    refreshCommentsBtn: document.getElementById("refresh-comments-btn"),
+    replyModal: document.getElementById("reply-modal"),
+    modalOriginalMsg: document.getElementById("modal-original-msg"),
+    replyText: document.getElementById("reply-text"),
+    cancelReplyBtn: document.getElementById("cancel-reply-btn"),
+    submitReplyBtn: document.getElementById("submit-reply-btn")
 };
 
 function toTags(value) {
@@ -183,7 +192,63 @@ async function fetchProjects() {
 }
 
 async function fetchStats() {
-    await Promise.all([fetchBlogs(), fetchProjects()]);
+    await Promise.all([fetchBlogs(), fetchProjects(), fetchComments()]);
+}
+
+function renderCommentTable(comments) {
+    if (!Array.isArray(comments) || comments.length === 0) {
+        dom.commentsList.innerHTML = `<tr><td colspan="6">No comments found.</td></tr>`;
+        return;
+    }
+
+    dom.commentsList.innerHTML = comments
+        .map((comment) => {
+            const safeName = comment?.name || "Unknown";
+            const safeEmail = comment?.email || "";
+            const safeMessage = comment?.message || "";
+            const safeReply = comment?.reply || "";
+            const safeBlogTitle = comment?.blogId?.title || "Unknown Blog";
+            const safeId = comment?._id || "";
+            const dateStr = formatDate(comment?.createdAt);
+            
+            return `
+            <tr>
+                <td>
+                    <div style="font-weight:bold;">${safeName}</div>
+                    <div style="font-size:0.8rem; color:#888;">${safeEmail}</div>
+                </td>
+                <td>${safeBlogTitle}</td>
+                <td><div style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${safeMessage}">${safeMessage}</div></td>
+                <td><div style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:${safeReply ? '#c44dff' : '#888'}" title="${safeReply}">${safeReply ? safeReply : 'No reply yet'}</div></td>
+                <td>${dateStr}</td>
+                <td class="actions-cell">
+                    <button class="btn btn-primary" data-reply-comment="${safeId}" data-msg="${encodeURIComponent(safeMessage)}" data-reply="${encodeURIComponent(safeReply)}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                        <i class="fas fa-reply"></i>
+                    </button>
+                    <button class="btn btn-danger" data-delete-comment="${safeId}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        })
+        .join("");
+}
+
+async function fetchComments() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/comments`);
+        const data = await parseJsonSafe(response);
+        if (!response.ok) throw new Error(data?.message || "Failed to load comments");
+        renderCommentTable(data || []);
+        if (dom.commentCount) {
+            dom.commentCount.innerText = Array.isArray(data) ? data.length : 0;
+        }
+    } catch (error) {
+        if (dom.commentsList) {
+            dom.commentsList.innerHTML = `<tr><td colspan="6">Failed to load comments.</td></tr>`;
+        }
+    }
 }
 
 function updateBlogPreview() {
@@ -232,6 +297,7 @@ function switchPage(page) {
 
     if (page === "blogs") fetchBlogs();
     if (page === "projects") fetchProjects();
+    if (page === "comments") fetchComments();
     if (page === "home") fetchStats();
 }
 
@@ -357,6 +423,59 @@ async function deleteProject(id) {
     }
 }
 
+async function deleteComment(id) {
+    if (!id) return;
+    if (!window.confirm("Delete this comment?")) return;
+    try {
+        const response = await fetch(`${API_BASE_URL}/comments/${id}`, { method: "DELETE" });
+        const data = await parseJsonSafe(response);
+        if (!response.ok) throw new Error(data?.message || "Failed to delete comment");
+        await fetchComments();
+        await fetchStats();
+    } catch (error) {
+        alert(error.message || "Failed to delete comment.");
+    }
+}
+
+function openReplyModal(id, originalMsg, existingReply) {
+    state.currentReplyCommentId = id;
+    dom.modalOriginalMsg.innerText = decodeURIComponent(originalMsg);
+    dom.replyText.value = decodeURIComponent(existingReply || "");
+    dom.replyModal.style.display = "flex";
+}
+
+function closeReplyModal() {
+    state.currentReplyCommentId = null;
+    dom.replyModal.style.display = "none";
+    dom.replyText.value = "";
+}
+
+async function submitReply() {
+    const id = state.currentReplyCommentId;
+    if (!id) return;
+    
+    const reply = dom.replyText.value.trim();
+    setBusy(dom.submitReplyBtn, "Sending...", "Send Reply", true);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/comments/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reply })
+        });
+        
+        const data = await parseJsonSafe(response);
+        if (!response.ok) throw new Error(data?.message || "Failed to post reply");
+        
+        closeReplyModal();
+        await fetchComments();
+    } catch (error) {
+        alert(error.message || "Failed to post reply.");
+    } finally {
+        setBusy(dom.submitReplyBtn, "Sending...", "Send Reply", false);
+    }
+}
+
 function bindEvents() {
     dom.navItems.forEach((item) => {
         item.addEventListener("click", (event) => {
@@ -395,6 +514,34 @@ function bindEvents() {
         const button = event.target.closest("[data-delete-project]");
         if (button) deleteProject(button.dataset.deleteProject);
     });
+
+    if (dom.commentsList) {
+        dom.commentsList.addEventListener("click", (event) => {
+            const deleteBtn = event.target.closest("[data-delete-comment]");
+            if (deleteBtn) {
+                deleteComment(deleteBtn.dataset.deleteComment);
+                return;
+            }
+            
+            const replyBtn = event.target.closest("[data-reply-comment]");
+            if (replyBtn) {
+                const { replyComment, msg, reply } = replyBtn.dataset;
+                openReplyModal(replyComment, msg, reply);
+            }
+        });
+    }
+
+    if (dom.refreshCommentsBtn) {
+        dom.refreshCommentsBtn.addEventListener("click", fetchComments);
+    }
+    
+    if (dom.cancelReplyBtn) {
+        dom.cancelReplyBtn.addEventListener("click", closeReplyModal);
+    }
+    
+    if (dom.submitReplyBtn) {
+        dom.submitReplyBtn.addEventListener("click", submitReply);
+    }
 }
 
 function init() {

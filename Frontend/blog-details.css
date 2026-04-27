@@ -33,7 +33,7 @@ body {
     background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&q=80&w=1600');
     background-size: cover;
     background-position: center;
-    padding: 100px 0;
+    padding: 200px 20px 0;
     text-align: center;
 }
 
@@ -61,7 +61,7 @@ body {
     display: grid;
     grid-template-columns: 1fr var(--sidebar-width);
     gap: 50px;
-    padding: 80px 20px 80px;
+    padding: 0px 20px 80px;
 }
 
 .featured-image {
@@ -296,4 +296,70 @@ body {
     .main-layout {
         grid-template-columns: 1fr;
     }
+}
+
+/* Comments List Styles */
+.comments-list-wrapper {
+    margin-bottom: 50px;
+}
+
+.comments-display {
+    margin-top: 30px;
+}
+
+.no-comments {
+    color: var(--text-muted);
+    font-style: italic;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.comment-item {
+    display: flex;
+    gap: 20px;
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    transition: transform 0.3s ease;
+}
+
+.comment-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-light);
+}
+
+.comment-avatar {
+    font-size: 40px;
+    color: var(--primary);
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.comment-author {
+    font-size: 18px;
+    color: var(--text-white);
+}
+
+.comment-date {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.comment-text {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.6;
 }

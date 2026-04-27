@@ -84,11 +84,11 @@
 }
 
 .nav-item.active {
-    color: #b057d5;
+    color: #c44dff;
 }
 
 .nav-item:hover {
-    color: #b057d5;
+    color: #c44dff;
 }
 
 /* Right Actions */
@@ -226,7 +226,7 @@
 }
 
 .mobile-nav-item:hover {
-    color: #b057d5;
+    color: #c44dff;
 }
 
 .mobile-actions {

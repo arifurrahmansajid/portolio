@@ -19,6 +19,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/comments', require('./routes/commentRoutes'));
 
 // Basic Route
 app.get('/', (req, res) => {

@@ -56,20 +56,28 @@
 
             <!-- Comments Section -->
             <section class="comment-section">
+                <div class="comments-list-wrapper">
+                    <h3 id="comments-count">Comments (0)</h3>
+                    <div id="comments-display" class="comments-display">
+                        <!-- Comments will be loaded here -->
+                        <p class="no-comments">No comments yet. Be the first to comment!</p>
+                    </div>
+                </div>
+
                 <h3>Leave a Reply</h3>
                 <p>Your email address will not be published. Required fields are marked *</p>
-                <form class="comment-form">
-                    <textarea placeholder="Comment *" required></textarea>
+                <form class="comment-form" id="comment-form">
+                    <textarea id="comment-message" placeholder="Comment *" required></textarea>
                     <div class="form-grid">
-                        <input type="text" placeholder="Name *" required>
-                        <input type="email" placeholder="Email *" required>
+                        <input type="text" id="comment-name" placeholder="Name *" required>
+                        <input type="email" id="comment-email" placeholder="Email *" required>
                     </div>
-                    <input type="text" placeholder="Website">
+                    <input type="text" id="comment-website" placeholder="Website">
                     <div class="checkbox-group">
                         <input type="checkbox" id="save-info">
                         <label for="save-info">Save my name, email, and website in this browser for the next time I comment.</label>
                     </div>
-                    <button type="submit" class="submit-btn">POST COMMENT</button>
+                    <button type="submit" class="submit-btn" id="submit-comment">POST COMMENT</button>
                 </form>
             </section>
         </div>
@@ -261,6 +269,101 @@
             }
         }
 
+        async function fetchComments(blogId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/comments/${blogId}`);
+                if (!response.ok) throw new Error("Failed to fetch comments");
+                const comments = await response.json();
+                renderComments(comments);
+            } catch (error) {
+                console.error("Error fetching comments:", error);
+            }
+        }
+
+        function renderComments(comments) {
+            const commentsDisplay = document.getElementById("comments-display");
+            const commentsCount = document.getElementById("comments-count");
+            
+            commentsCount.innerText = `Comments (${comments.length})`;
+
+            if (comments.length === 0) {
+                commentsDisplay.innerHTML = `<p class="no-comments">No comments yet. Be the first to comment!</p>`;
+                return;
+            }
+
+            commentsDisplay.innerHTML = comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <h4 class="comment-author">${comment.name}</h4>
+                            <span class="comment-date">${new Date(comment.createdAt).toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                        </div>
+                        <p class="comment-text">${comment.message}</p>
+                        ${comment.reply ? `
+                        <div class="admin-reply" style="margin-top: 15px; padding: 15px; background: rgba(183, 74, 235, 0.1); border-left: 4px solid var(--primary); border-radius: 8px;">
+                            <div class="reply-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <i class="fas fa-shield-alt" style="color: var(--primary);"></i>
+                                <span style="font-weight: 600; color: var(--primary);">Admin Reply</span>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 15px;">${comment.reply}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        async function handleCommentSubmit(e, blogId) {
+            e.preventDefault();
+            const submitBtn = document.getElementById("submit-comment");
+            const originalText = submitBtn.innerText;
+            
+            const name = document.getElementById("comment-name").value;
+            const email = document.getElementById("comment-email").value;
+            const message = document.getElementById("comment-message").value;
+            const website = document.getElementById("comment-website").value;
+
+            try {
+                submitBtn.innerText = "POSTING...";
+                submitBtn.disabled = true;
+
+                const response = await fetch(`${API_BASE_URL}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        blogId,
+                        name,
+                        email,
+                        message,
+                        website
+                    })
+                });
+
+                if (!response.ok) throw new Error("Failed to post comment");
+
+                // Clear form
+                document.getElementById("comment-form").reset();
+                
+                // Refresh comments
+                await fetchComments(blogId);
+
+                // Show success (optional, could use SweetAlert if available)
+                alert("Comment posted successfully!");
+
+            } catch (error) {
+                console.error("Error posting comment:", error);
+                alert("Failed to post comment. Please try again.");
+            } finally {
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", async () => {
             loadComponents();
             
@@ -273,6 +376,10 @@
 
             if (blogId) {
                 await fetchBlogDetails(blogId);
+                await fetchComments(blogId);
+
+                const commentForm = document.getElementById("comment-form");
+                commentForm.addEventListener("submit", (e) => handleCommentSubmit(e, blogId));
             } else {
                 document.getElementById("blog-content-body").innerHTML = "<p>No blog selected. Please go back to the homepage.</p>";
             }
