@@ -161,21 +161,38 @@
     border: 1px solid rgba(255, 107, 107, 0.2);
 }
 
-.project-link {
+.project-links {
+    display: flex;
+    gap: 20px;
     margin-top: 15px;
-    display: inline-block;
+    position: relative;
+    z-index: 5;
+}
+
+.project-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: #b057d5;
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: all 0.3s ease;
-    position: relative;
-    z-index: 2;
 }
 
 .project-link:hover {
     color: #ff8453;
-    padding-left: 5px;
+    transform: translateX(3px);
+}
+
+.github-link {
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+.github-link:hover {
+    opacity: 1;
+    color: #b057d5;
 }
 
 /* View All Button */

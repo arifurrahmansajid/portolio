@@ -49,7 +49,10 @@ function createPortfolioCard(project) {
             <canvas class="portfolio-card-canvas" aria-hidden="true"></canvas>
             <h3>${project.name}</h3>
             <p>${project.description}</p>
-            ${project.liveLink ? `<a href="${project.liveLink}" target="_blank" class="project-link">Live Preview</a>` : ''}
+            <div class="project-links">
+                ${project.liveLink ? `<a href="${project.liveLink}" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i> Live Preview</a>` : ''}
+                ${project.githubLink ? `<a href="${project.githubLink}" target="_blank" class="project-link github-link"><i class="fab fa-github"></i> GitHub</a>` : ''}
+            </div>
         </div>
     `;
 
