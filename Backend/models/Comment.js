@@ -21,6 +21,9 @@ const commentSchema = new mongoose.Schema({
     website: {
         type: String
     },
+    reply: {
+        type: String
+    },
     createdAt: {
         type: Date,
         default: Date.now
