@@ -14,12 +14,14 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, '../Frontend')));
 
 // Routes
 app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/comments', require('./routes/commentRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
 
 // Basic Route
 app.get('/', (req, res) => {

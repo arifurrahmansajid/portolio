@@ -7,6 +7,12 @@
     <title>Admin Dashboard | Portfolio</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Auth Guard
+        if (!localStorage.getItem('adminToken')) {
+            window.location.href = 'login.html';
+        }
+    </script>
 </head>
 
 <body>
@@ -36,7 +42,10 @@
             <header class="top-header">
                 <h1 id="page-title">Dashboard Overview</h1>
                 <div class="user-profile">
-                    <span>Admin User</span>
+                    <div id="logout-btn" style="cursor:pointer; margin-right:1rem; color:var(--text-dim); font-size:0.9rem;" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </div>
+                    <span id="admin-display-name">Admin User</span>
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin">
                 </div>
             </header>

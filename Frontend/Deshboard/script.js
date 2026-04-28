@@ -38,7 +38,9 @@ const dom = {
     modalOriginalMsg: document.getElementById("modal-original-msg"),
     replyText: document.getElementById("reply-text"),
     cancelReplyBtn: document.getElementById("cancel-reply-btn"),
-    submitReplyBtn: document.getElementById("submit-reply-btn")
+    submitReplyBtn: document.getElementById("submit-reply-btn"),
+    logoutBtn: document.getElementById("logout-btn"),
+    adminName: document.getElementById("admin-display-name")
 };
 
 function toTags(value) {
@@ -542,10 +544,25 @@ function bindEvents() {
     if (dom.submitReplyBtn) {
         dom.submitReplyBtn.addEventListener("click", submitReply);
     }
+
+    if (dom.logoutBtn) {
+        dom.logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = 'login.html';
+        });
+    }
 }
 
 function init() {
     bindEvents();
+    
+    // Set Admin Name
+    const user = JSON.parse(localStorage.getItem('adminUser') || '{}');
+    if (user.username && dom.adminName) {
+        dom.adminName.innerText = user.username.charAt(0).toUpperCase() + user.username.slice(1);
+    }
+
     updateBlogPreview();
     updateProjectPreview();
     dom.previewBlogImg.src = DEFAULT_BLOG_IMAGE;
