@@ -74,6 +74,41 @@ function initHeader() {
 
     setActiveLink(navItems);
     setActiveLink(mobileItems);
+
+    // --- Smooth Scrolling for internal hash links ---
+    document.querySelectorAll('a[href^="#"], a[href^="Index.html#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            const isHomePath = window.location.pathname.endsWith('Index.html') || window.location.pathname.endsWith('/');
+            
+            if (isHomePath) {
+                const targetId = href.split('#')[1];
+                if (targetId) {
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        window.history.pushState(null, null, '#' + targetId);
+                        
+                        const headerOffset = document.getElementById('main-header')?.offsetHeight || 80;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.scrollY - headerOffset;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                        
+                        // Close mobile menu if open
+                        if (mobileToggle && mobileMenu) {
+                            mobileToggle.classList.remove('is-active');
+                            mobileMenu.classList.remove('is-active');
+                            document.body.style.overflow = 'auto';
+                        }
+                    }
+                }
+            }
+        });
+    });
 }
 
 // Run init on DOMContentLoaded or immediately if already loaded

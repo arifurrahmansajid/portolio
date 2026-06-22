@@ -137,6 +137,23 @@
                     console.error(`Error loading component ${comp.id}:`, error);
                 }
             }
+
+            // Scroll to hash if present after loading components
+            if (window.location.hash) {
+                setTimeout(() => {
+                    const target = document.querySelector(window.location.hash);
+                    if (target) {
+                        const headerOffset = document.getElementById('main-header')?.offsetHeight || 80;
+                        const elementPosition = target.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.scrollY - headerOffset;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                    }
+                }, 100); // small delay to ensure rendering is complete
+            }
         }
 
         loadComponents();
