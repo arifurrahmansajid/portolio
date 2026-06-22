@@ -4,7 +4,7 @@ async function loadProjects() {
     if (!portfolioGrid) return;
 
     try {
-        const response = await fetch('http://localhost:5000/api/projects');
+        const response = await fetch('https://backend-twze.vercel.app/api/projects');
         if (!response.ok) throw new Error('Failed to fetch projects');
         
         const projects = (await response.json()).slice(0, 6);
@@ -38,7 +38,7 @@ function createPortfolioCard(project) {
     if (project.image) {
         imageUrl = project.image.startsWith('http') 
             ? project.image 
-            : `http://localhost:5000/${project.image}`;
+            : `https://backend-twze.vercel.app/${project.image}`;
     }
 
     card.innerHTML = `

@@ -8,7 +8,7 @@ async function loadBlogs() {
     
     try {
         // Fetch blogs from backend API
-        const response = await fetch('http://localhost:5000/api/blogs');
+        const response = await fetch('https://backend-twze.vercel.app/api/blogs');
         
         if (!response.ok) {
             throw new Error('Failed to fetch blogs');
@@ -57,7 +57,7 @@ function createBlogCard(blog) {
     
     let imageUrl = './Assets/1.jpg';
     if (blog.image) {
-        imageUrl = blog.image.startsWith('http') ? blog.image : `http://localhost:5000/${blog.image}`;
+        imageUrl = blog.image.startsWith('http') ? blog.image : `https://backend-twze.vercel.app/${blog.image}`;
     }
     
     card.innerHTML = `
